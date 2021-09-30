@@ -3,6 +3,7 @@ package com.jaspervanmerle.apmath;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * The Grid class stores a hexagonal grid in which cells can be marked.
@@ -53,14 +54,14 @@ public class Grid {
             return false;
         }
 
-        int rowWidth = size - Math.abs(y);
         int startX = y < 0 ? -(span + y) : -span;
+        int rowWidth = size - Math.abs(y);
 
         return x >= startX && x < startX + rowWidth;
     }
 
     public boolean markCell(int x, int y) {
-        if (isMarked(x, y) || !isOnGrid(x, y) || isBlocked(x, y)) {
+        if (isMarked(x, y) || isBlocked(x, y) || !isOnGrid(x, y)) {
             return false;
         }
 
@@ -147,8 +148,8 @@ public class Grid {
         StringBuilder sb = new StringBuilder();
 
         for (int y = -span; y <= span; y++) {
-            int rowWidth = size - Math.abs(y);
             int startX = y < 0 ? -(span + y) : -span;
+            int rowWidth = size - Math.abs(y);
 
             sb.append(" ".repeat(Math.abs(y)));
 

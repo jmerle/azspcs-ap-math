@@ -10,8 +10,8 @@ This repository contains my solution to the [AP Math](http://azspcs.com/Contest/
 |---|-------|
 | 2 | [6](./results/002.txt) |
 | 6 | [33](./results/006.txt) |
-| 11 | [68](./results/011.txt) |
-| 18 | [119](./results/018.txt) |
+| 11 | [69](./results/011.txt) |
+| 18 | [120](./results/018.txt) |
 | 27 | [192](./results/027.txt) |
 | 38 | [282](./results/038.txt) |
 | 50 | [450](./results/050.txt) |

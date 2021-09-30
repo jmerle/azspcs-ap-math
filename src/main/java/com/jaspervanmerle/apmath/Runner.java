@@ -5,32 +5,51 @@ import java.util.Collections;
 import java.util.List;
 
 public class Runner {
-    private final ResultManager resultManager = new ResultManager();
+    private class Worker implements Runnable {
+        private final int n;
+        private final List<int[]> moves;
+        private final ResultManager resultManager;
 
-    private void run(int n) {
-        System.out.println("Running for n = " + n);
+        public Worker(int n, ResultManager resultManager) {
+            this.n = n;
+            this.resultManager = resultManager;
 
-        Grid grid = new Grid(n);
-        int span = grid.getSpan();
+            Grid grid = new Grid(n);
+            int span = grid.getSpan();
 
-        List<int[]> moves = new ArrayList<>(3 * span * (span + 1) + 1);
-        for (int y = -span; y <= span; y++) {
-            for (int x = -span; x <= span; x++) {
-                if (grid.isOnGrid(x, y)) {
-                    moves.add(new int[]{x, y});
+            moves = new ArrayList<>(3 * span * (span + 1) + 1);
+            for (int y = -span; y <= span; y++) {
+                for (int x = -span; x <= span; x++) {
+                    if (grid.isOnGrid(x, y)) {
+                        moves.add(new int[]{x, y});
+                    }
                 }
             }
         }
 
-        long startTime = System.nanoTime();
-        while (System.nanoTime() - startTime <= 60 * 1e9) {
-            Grid newGrid = new Grid(n);
-            for (int[] move : moves) {
-                newGrid.markCell(move[0], move[1]);
-            }
+        @Override
+        public void run() {
+            while (true) {
+                Collections.shuffle(moves);
 
-            resultManager.submitGrid(newGrid);
-            Collections.shuffle(moves);
+                Grid newGrid = new Grid(n);
+                for (int[] move : moves) {
+                    newGrid.markCell(move[0], move[1]);
+                }
+
+                resultManager.submitGrid(newGrid);
+            }
+        }
+    }
+
+    private void run(int n) {
+        System.out.println("Running for n = " + n);
+
+        ResultManager resultManager = new ResultManager();
+
+        int cpuCount = Runtime.getRuntime().availableProcessors();
+        for (int i = 0; i < cpuCount / 4 * 3; i++) {
+            new Thread(new Worker(n, resultManager)).start();
         }
     }
 
