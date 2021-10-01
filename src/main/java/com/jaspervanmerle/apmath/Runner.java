@@ -3,6 +3,7 @@ package com.jaspervanmerle.apmath;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Runner {
     private class Worker implements Runnable {
@@ -17,7 +18,7 @@ public class Runner {
             Grid grid = new Grid(n);
             int span = grid.getSpan();
 
-            moves = new ArrayList<>(3 * span * (span + 1) + 1);
+            moves = new ArrayList<>();
             for (int y = -span; y <= span; y++) {
                 for (int x = -span; x <= span; x++) {
                     if (grid.isOnGrid(x, y)) {
@@ -30,7 +31,7 @@ public class Runner {
         @Override
         public void run() {
             while (true) {
-                Collections.shuffle(moves);
+                Collections.shuffle(moves, ThreadLocalRandom.current());
 
                 Grid newGrid = new Grid(n);
                 for (int[] move : moves) {

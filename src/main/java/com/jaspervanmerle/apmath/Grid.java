@@ -3,7 +3,6 @@ package com.jaspervanmerle.apmath;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * The Grid class stores a hexagonal grid in which cells can be marked.
@@ -186,9 +185,6 @@ public class Grid {
     }
 
     private int getCellsIndex(int x, int y) {
-        x += span;
-        y += span;
-
-        return y * size + x;
+        return (y + span) * size + (x + span);
     }
 }

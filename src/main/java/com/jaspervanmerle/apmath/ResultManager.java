@@ -18,7 +18,8 @@ public class ResultManager {
     private final Path readmeFile;
     private final Path resultsDirectory;
 
-    private final Map<Integer, Integer> bestScores = new HashMap<>();
+    private final Map<Integer, Integer> bestAllTimeScores = new HashMap<>();
+    private final Map<Integer, Integer> bestSessionScores = new HashMap<>();
 
     public ResultManager() {
         integerFormat = new DecimalFormat();
@@ -42,7 +43,7 @@ public class ResultManager {
             try {
                 List<String> lines = Files.readAllLines(file.toPath());
                 String scoreLine = lines.get(lines.size() - 1);
-                bestScores.put(n, Integer.parseInt(scoreLine.split(": ")[1].replaceAll(",", "")));
+                bestAllTimeScores.put(n, Integer.parseInt(scoreLine.split(": ")[1].replaceAll(",", "")));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -53,12 +54,27 @@ public class ResultManager {
         int n = grid.getN();
         int score = grid.getScore();
 
-        if (bestScores.containsKey(n) && score <= bestScores.get(n)) {
-            return;
+        boolean isBestAllTime = !bestAllTimeScores.containsKey(n) || score > bestAllTimeScores.get(n);
+        if (isBestAllTime) {
+            bestAllTimeScores.put(n, score);
         }
 
-        System.out.println("New best score for n = " + n + ": " + score);
-        bestScores.put(n, score);
+        boolean isBestSession = !bestSessionScores.containsKey(n) || score > bestSessionScores.get(n);
+        if (isBestSession) {
+            bestSessionScores.put(n, score);
+        }
+
+        String scoreStr = integerFormat.format(score);
+
+        if (isBestAllTime) {
+            System.out.println("New best all-time score for n = " + n + ": " + scoreStr);
+        } else if (isBestSession) {
+            String bestAllTimeScoreStr = integerFormat.format(bestAllTimeScores.get(n));
+            System.out.println("New best session score for n = " + n + ": " + scoreStr + " (best all-time score: " + bestAllTimeScoreStr + ")");
+            return;
+        } else {
+            return;
+        }
 
         try {
             updateReadme(n);
@@ -69,7 +85,7 @@ public class ResultManager {
     }
 
     private void updateReadme(int n) throws IOException {
-        int newScore = bestScores.get(n);
+        int newScore = bestAllTimeScores.get(n);
         String resultsFileName = String.format("%03d.txt", n);
 
         List<String> readmeLines = new ArrayList<>();
