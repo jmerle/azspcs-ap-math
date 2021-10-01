@@ -162,6 +162,37 @@ public class GridTest {
     }
 
     @Test
+    void isMarkedReturnsWhetherCellHasBeenSuccessfullyMarked() {
+        Grid grid = new Grid(3);
+
+        grid.markCell(0, -2);
+        grid.markCell(2, -2);
+        grid.markCell(-2, 2);
+        grid.markCell(0, 2);
+
+        assertFalse(grid.isBlocked(-2, 0));
+        assertTrue(grid.isBlocked(-1, 0));
+        assertTrue(grid.isBlocked(0, 0));
+        assertTrue(grid.isBlocked(1, 0));
+        assertFalse(grid.isBlocked(2, 0));
+    }
+
+    void isBlockedReturnsWhetherCellCanBeMarked() {
+        Grid grid = new Grid(3);
+
+        grid.markCell(0, -2);
+        grid.markCell(2, -2);
+        grid.markCell(-2, 2);
+        grid.markCell(0, 2);
+
+        assertTrue(grid.isMarked(0, -2));
+        assertTrue(grid.isMarked(2, -2));
+        assertTrue(grid.isMarked(-2, 2));
+        assertTrue(grid.isMarked(0, 2));
+        assertFalse(grid.isMarked(0, 0));
+    }
+
+    @Test
     void getScoreReturnsNumberOfSuccessfullyMarkedCells() {
         Grid grid = new Grid(3);
 

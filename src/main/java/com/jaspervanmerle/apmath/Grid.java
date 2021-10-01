@@ -48,6 +48,16 @@ public class Grid {
         blockedCells = new boolean[size * size];
     }
 
+    public Grid(Grid other) {
+        n = other.n;
+
+        span = other.span;
+        size = other.size;
+
+        markedCells = other.markedCells.clone();
+        blockedCells = other.blockedCells.clone();
+    }
+
     public boolean isOnGrid(int x, int y) {
         if (x < -span || x > span || y < -span || y > span) {
             return false;
@@ -111,6 +121,22 @@ public class Grid {
         return size;
     }
 
+    public boolean isMarked(int x, int y) {
+        return markedCells[getCellsIndex(x, y)];
+    }
+
+    private void setMarked(int x, int y, boolean state) {
+        markedCells[getCellsIndex(x, y)] = state;
+    }
+
+    public boolean isBlocked(int x, int y) {
+        return blockedCells[getCellsIndex(x, y)];
+    }
+
+    private void setBlocked(int x, int y, boolean state) {
+        blockedCells[getCellsIndex(x, y)] = state;
+    }
+
     public int getScore() {
         return score;
     }
@@ -166,22 +192,6 @@ public class Grid {
         }
 
         return sb.toString();
-    }
-
-    private boolean isMarked(int x, int y) {
-        return markedCells[getCellsIndex(x, y)];
-    }
-
-    private void setMarked(int x, int y, boolean state) {
-        markedCells[getCellsIndex(x, y)] = state;
-    }
-
-    private boolean isBlocked(int x, int y) {
-        return blockedCells[getCellsIndex(x, y)];
-    }
-
-    private void setBlocked(int x, int y, boolean state) {
-        blockedCells[getCellsIndex(x, y)] = state;
     }
 
     private int getCellsIndex(int x, int y) {

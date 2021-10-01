@@ -10,14 +10,14 @@ This repository contains my solution to the [AP Math](http://azspcs.com/Contest/
 |---|-------|
 | 2 | [6](./results/002.txt) |
 | 6 | [33](./results/006.txt) |
-| 11 | [70](./results/011.txt) |
-| 18 | [120](./results/018.txt) |
-| 27 | [192](./results/027.txt) |
-| 38 | [282](./results/038.txt) |
-| 50 | [450](./results/050.txt) |
+| 11 | [73](./results/011.txt) |
+| 18 | [134](./results/018.txt) |
+| 27 | [216](./results/027.txt) |
+| 38 | [346](./results/038.txt) |
+| 50 | [479](./results/050.txt) |
 | 65 | [768](./results/065.txt) |
-| 81 | [768](./results/081.txt) |
-| 98 | [951](./results/098.txt) |
+| 81 | [822](./results/081.txt) |
+| 98 | [1,076](./results/098.txt) |
 | 118 | [1,086](./results/118.txt) |
 | 139 | [1,615](./results/139.txt) |
 | 162 | [1,940](./results/162.txt) |

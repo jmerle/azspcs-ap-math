@@ -1,57 +1,78 @@
 package com.jaspervanmerle.apmath;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Optional;
 
 public class Runner {
-    private class Worker implements Runnable {
-        private final int n;
-        private final List<int[]> moves;
-        private final ResultManager resultManager;
-
-        public Worker(int n, ResultManager resultManager) {
-            this.n = n;
-            this.resultManager = resultManager;
-
-            Grid grid = new Grid(n);
-            int span = grid.getSpan();
-
-            moves = new ArrayList<>();
-            for (int y = -span; y <= span; y++) {
-                for (int x = -span; x <= span; x++) {
-                    if (grid.isOnGrid(x, y)) {
-                        moves.add(new int[]{x, y});
-                    }
-                }
-            }
-        }
-
-        @Override
-        public void run() {
-            while (true) {
-                Collections.shuffle(moves, ThreadLocalRandom.current());
-
-                Grid newGrid = new Grid(n);
-                for (int[] move : moves) {
-                    newGrid.markCell(move[0], move[1]);
-                }
-
-                resultManager.submitGrid(newGrid);
-            }
-        }
-    }
+    private final ResultManager resultManager = new ResultManager();
 
     private void run(int n) {
         System.out.println("Running for n = " + n);
 
-        ResultManager resultManager = new ResultManager();
+        Grid grid = new Grid(n);
+        int span = grid.getSpan();
 
-        int cpuCount = Runtime.getRuntime().availableProcessors();
-        for (int i = 0; i < cpuCount / 4 * 3; i++) {
-            new Thread(new Worker(n, resultManager)).start();
+        while (true) {
+            List<int[]> moves = new ArrayList<>();
+            for (int y = -span; y <= span; y++) {
+                for (int x = -span; x <= span; x++) {
+                    if (grid.isOnGrid(x, y) && !grid.isMarked(x, y) && !grid.isBlocked(x, y)) {
+                        moves.add(new int[]{x, y});
+                    }
+                }
+            }
+
+            if (moves.isEmpty()) {
+                break;
+            }
+
+            Optional<Pair<int[], Integer>> bestPair = moves.parallelStream().map(move -> {
+                Grid tmpGrid = new Grid(grid);
+
+                if (!tmpGrid.markCell(move[0], move[1])) {
+                    return null;
+                }
+
+                int remainingMoves = 0;
+                for (int y = -span; y <= span; y++) {
+                    for (int x = -span; x <= span; x++) {
+                        if (tmpGrid.isOnGrid(x, y) && !tmpGrid.isMarked(x, y) && !tmpGrid.isBlocked(x, y)) {
+                            remainingMoves++;
+                        }
+                    }
+                }
+
+                return new Pair<>(move, remainingMoves);
+            }).max((a, b) -> {
+                if (a == null && b == null) {
+                    return 0;
+                } else if (a == null) {
+                    return -1;
+                } else if (b == null) {
+                    return 1;
+                }
+
+                int remainingMovesA = a.getSecond();
+                int remainingMovesB = b.getSecond();
+                if (remainingMovesA != remainingMovesB) {
+                    return remainingMovesA - remainingMovesB;
+                }
+
+                int[] moveA = a.getFirst();
+                int[] moveB = b.getFirst();
+                return (Math.abs(moveA[0]) + Math.abs(moveA[1])) - (Math.abs(moveB[0]) + Math.abs(moveB[1]));
+            });
+
+            if (bestPair.isEmpty()) {
+                break;
+            }
+
+            int[] bestMove = bestPair.get().getFirst();
+            grid.markCell(bestMove[0], bestMove[1]);
         }
+
+        resultManager.submitGrid(grid);
     }
 
     public static void main(String[] args) {
