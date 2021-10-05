@@ -70,7 +70,7 @@ public class Grid {
     }
 
     public boolean markCell(int x, int y) {
-        if (isMarked(x, y) || isBlocked(x, y) || !isOnGrid(x, y)) {
+        if (!isOnGrid(x, y) || isMarked(x, y) || isBlocked(x, y)) {
             return false;
         }
 
@@ -83,29 +83,23 @@ public class Grid {
                     continue;
                 }
 
-                updateBlocks(x, y, x + i, y + j, x - i, y - j);
-                updateBlocks(x, y, x + i, y + j, x + 2 * i, y + 2 * j);
+                updateBlocked(x + i, y + j, x - i, y - j);
+                updateBlocked(x + i, y + j, x + 2 * i, y + 2 * j);
             }
         }
 
         return true;
     }
 
-    private void updateBlocks(int x1, int y1, int x2, int y2, int x3, int y3) {
-        if (!isOnGrid(x1, y1) || !isOnGrid(x2, y2) || !isOnGrid(x3, y3)) {
+    private void updateBlocked(int x2, int y2, int x3, int y3) {
+        if (!isOnGrid(x2, y2) || !isOnGrid(x3, y3)) {
             return;
         }
 
-        boolean marked1 = isMarked(x1, y1);
-        boolean marked2 = isMarked(x2, y2);
-        boolean marked3 = isMarked(x3, y3);
-
-        if (marked1 && marked2) {
+        if (isMarked(x2, y2)) {
             setBlocked(x3, y3, true);
-        } else if (marked1 && marked3) {
+        } else if (isMarked(x3, y3)) {
             setBlocked(x2, y2, true);
-        } else if (marked2 && marked3) {
-            setBlocked(x1, y1, true);
         }
     }
 
